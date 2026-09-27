@@ -142,7 +142,12 @@ export default function App() {
         <div>
           <strong>ToBS</strong> is an open index, not a law firm. {counts.orgs} names, {counts.products} instruments in v1.
         </div>
-        <div>Built in public by Lebz Miya.</div>
+        <div>
+          Built in public by Lebz Miya.{" "}
+          <a href="https://github.com/Lebz-M/tobs">Source</a>
+          {" · "}
+          <a href="https://tobs-terms.web.app">Live</a>
+        </div>
       </footer>
 
       {tourOn && (

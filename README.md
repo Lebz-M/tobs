@@ -8,7 +8,7 @@ The site does not store full terms of service. It stores an index taken at a dat
 
 ## Status
 
-v0.1.0 — first public index.
+v0.1.0 — first public index. Live at https://tobs-terms.web.app. Source at https://github.com/Lebz-M/tobs.
 
 ## Getting started
 
