@@ -2,10 +2,20 @@ import { named } from "./named.js";
 import { named2 } from "./named2.js";
 import { wildcards } from "./wildcards.js";
 import { INGESTED_AT } from "./shape.js";
+import { banks } from "./depth.js";
 
 export { INGESTED_AT };
 
 export const orgs = [...named, ...named2, ...wildcards];
+
+for (const org of orgs) {
+  for (const product of org.products) {
+    const need = Math.max(0, 5 - product.clauses.length);
+    if (!need) continue;
+    const extra = banks[product.id] || [];
+    product.clauses = [...product.clauses, ...extra.slice(0, need)];
+  }
+}
 
 export function daysSince(iso) {
   const t = new Date(iso).getTime();

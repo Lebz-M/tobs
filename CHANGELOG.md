@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 — 2026-09-29
+
+The index uses the width of the screen, and every instrument carries at least five things.
+
+- A product page is a full-width ledger: thing, plain English, the document, the court, the rating.
+- Home and How it works spell out the method: ingest on a date, separate the bites, quote only what was copied, score, then age the row.
+- Additional rows are orientations unless a verbatim outtake was already captured. Gaps stay gaps.
+
 ## 0.1.0 — 2026-09-28
 
 First public index.

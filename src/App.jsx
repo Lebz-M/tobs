@@ -9,7 +9,7 @@ import {
   search,
 } from "./data/corpus.js";
 
-const TOUR_KEY = "tobs.tour.v1";
+const TOUR_KEY = "tobs.tour.v2";
 
 const tourSteps = [
   {
@@ -21,8 +21,8 @@ const tourSteps = [
     body: "Google is not one agreement. YouTube is not Gmail. Pick the product. The parent company is there when the name on the tin and the name on the contract differ.",
   },
   {
-    title: "Read the row, not the vibe",
-    body: "Each bite is a thing, some tags, plain English, a source pointer, what it means if this ever sees a court, and a predatory rating out of 10. Ten is the worst.",
+    title: "Five bites, across the page",
+    body: "Every instrument carries at least five different things. Each one is a row: the clause, plain English, the document pointer, what a court might do with it, and a rating out of 10. Ten is the worst.",
   },
   {
     title: "Quotes are quotes. Readings are readings.",
@@ -113,7 +113,7 @@ export default function App() {
           <small>Terms of BullShit</small>
         </button>
         <nav className="nav">
-          <button onClick={() => go("#/contribute")}>Edit the index</button>
+          <button onClick={() => go("#/contribute")}>How it works</button>
           <button onClick={() => go("#/log")}>Changelog</button>
           <button onClick={() => { setStep(0); setDont(false); setTourOn(true); }}>How to</button>
         </nav>
@@ -193,10 +193,12 @@ function Home({ q, setQ, hits, open, setOpen, active, onKey, openHit }) {
   const samples = ["Google", "WhatsApp", "Claude", "SHEIN", "CIPC", "Flock"];
   return (
     <section className="hero">
-      <span className="kicker">v1 · open index</span>
+      <div className="home-grid">
+        <div>
+      <span className="kicker">open index</span>
       <h1 className="display">You clicked I agree. We read it.</h1>
       <p className="lede">
-        Search a company or a product. ToBS shows the clauses that actually change your money, your privacy, or your day in court — in ordinary words, with a pointer back to the document.
+        Search a company or a product. ToBS opens that instrument into at least five separate bites — money, privacy, ownership, shutdown, and the courtroom — with a pointer back to the document.
       </p>
       <div className="search-wrap">
         <input
@@ -241,6 +243,21 @@ function Home({ q, setQ, hits, open, setOpen, active, onKey, openHit }) {
         {samples.map((name) => (
           <button key={name} onClick={() => { setQ(name); setOpen(true); }}>{name}</button>
         ))}
+      </div>
+        </div>
+        <aside className="anatomy">
+          <span className="kicker">How a row works</span>
+          <h2>One thing. Five columns.</h2>
+          <ol>
+            <li><strong>Thing.</strong> The clause, named as a person would say it. Not the heading the lawyers used.</li>
+            <li><strong>Tags.</strong> Privacy, license, payout, court, gap. So you can see the kind of bite before the paragraph.</li>
+            <li><strong>Plain English.</strong> What the sentence does to you. A reading, unless the next column says otherwise.</li>
+            <li><strong>The document.</strong> A yellow block is a verbatim outtake captured on the ingestion date. Otherwise we refuse to invent a quote, and we point at the section instead.</li>
+            <li><strong>Court.</strong> The contract’s chosen forum, and the local statute that may ignore it — CPA, POPIA, GDPR, a ban on forced arbitration.</li>
+            <li><strong>Rating.</strong> Predatory score out of 10. Ten takes the most from the person who did not write the contract. The big number on a product is the average.</li>
+          </ol>
+          <p className="sub">We do not store the whole terms of service. We store an index taken on a date, and the days since.</p>
+        </aside>
       </div>
     </section>
   );
@@ -308,44 +325,52 @@ function ProductPage({ orgId, productId }) {
           </div>
         </div>
         {org.umbrella && <div className="umbrella">{org.umbrella}</div>}
-        <p className="sub">Predatory rating: 10 is the most extractive. Colors run green to red. Editorial, not a judgment.</p>
+        <div className="stats">
+          <div className="stat"><b>{product.clauses.length}</b><span>things in this instrument</span></div>
+          <div className="stat"><b>{score == null ? "—" : score}</b><span>average predatory rating</span></div>
+          <div className="stat"><b>{days}</b><span>{days === 1 ? "day" : "days"} since ingestion</span></div>
+          <div className="stat"><b>{product.clauses.filter((c) => c.kind === "verbatim").length}</b><span>verbatim outtakes</span></div>
+        </div>
+      </div>
+      <div className="ledger-head">
+        <span>Thing</span>
+        <span>Plain English</span>
+        <span>From the document</span>
+        <span>If this sees a court</span>
+        <span>Rating</span>
       </div>
       {product.clauses.map((c) => (
-        <section key={c.title} className="clause">
-          <div className="clause-top">
-            <div>
-              <h3>{c.title}</h3>
-              <div className="tags">
-                {c.tags.map((t) => <span className="tag" key={t}>{t}</span>)}
-              </div>
-            </div>
-            <div className="rate" style={{ background: heat(c.score) }}>
-              <b>{c.score == null ? "—" : c.score}</b>
-              <span>out of 10</span>
+        <section key={c.title} className="clause ledger-row">
+          <div className="cell">
+            <h3>{c.title}</h3>
+            <div className="tags">
+              {c.tags.map((t) => <span className="tag" key={t}>{t}</span>)}
             </div>
           </div>
-          <div className="grid">
-            <div>
-              <h4>What it means</h4>
-              <p>{c.plain}</p>
+          <div className="cell">
+            <p className="cell-label">Plain English</p>
+            <p>{c.plain}</p>
+          </div>
+          <div className="cell">
+            <p className="cell-label">From the document</p>
+            <div className="kind">
+              {c.kind === "verbatim" ? "Verbatim outtake" : c.kind === "gap" ? "Nothing to quote" : "Orientation — not a quote"}
             </div>
-            <div>
-              <h4>From the document</h4>
-              <div className="kind">
-                {c.kind === "verbatim" ? "Verbatim outtake" : c.kind === "gap" ? "Nothing to quote" : "Orientation — not a quote"}
-              </div>
-              {c.excerpt ? <blockquote className="quote">{c.excerpt}</blockquote> : <p>No verbatim sentence captured at ingestion. Open the source before you repeat one.</p>}
-              <p className="pointer">
-                {c.pointer}
-                <br />
-                <a href={c.sourceUrl} target="_blank" rel="noreferrer">Source</a>
-              </p>
-            </div>
-            <div>
-              <h4>If this sees a court</h4>
-              <p>{c.implications}</p>
-              <p className="pointer">{c.courts}</p>
-            </div>
+            {c.excerpt ? <blockquote className="quote">{c.excerpt}</blockquote> : <p>No verbatim sentence captured at ingestion. Open the source before you repeat one.</p>}
+            <p className="pointer">
+              {c.pointer}
+              <br />
+              <a href={c.sourceUrl} target="_blank" rel="noreferrer">Source</a>
+            </p>
+          </div>
+          <div className="cell">
+            <p className="cell-label">If this sees a court</p>
+            <p>{c.implications}</p>
+            <p className="pointer">{c.courts}</p>
+          </div>
+          <div className="rate" style={{ background: heat(c.score) }}>
+            <b>{c.score == null ? "—" : c.score}</b>
+            <span>out of 10</span>
           </div>
         </section>
       ))}
@@ -364,20 +389,36 @@ function Missing() {
 
 function Contribute() {
   return (
-    <article className="panel prose">
-      <h2>The index is public. The merge is not casual.</h2>
-      <p>
-        ToBS does not store full terms of service. It stores an index taken at a date: a pointer, a short outtake when someone actually copied it, a plain-language reading, and an editorial score. Anyone can propose an improvement. A maintainer merges it.
-      </p>
-      <ol>
-        <li>Fork the repo and edit the data files in <code>src/data</code>.</li>
-        <li>Every instrument needs a working source URL, the date you opened it, and the section pointer a reader can find.</li>
-        <li>A verbatim outtake is a short quote you copied from that page. If you did not copy it, leave the excerpt empty. Invented quotes get rejected.</li>
-        <li>Predatory scores need one sentence of why. Ten means the clause takes the most from the person who did not write it.</li>
-        <li>Open a pull request. Review checks the URL, the quote, and whether a subsidiary was flattened into its parent.</li>
-      </ol>
-      <p>Quality control is the pull request. There is no silent edit on the live site.</p>
-    </article>
+    <div className="how-grid">
+      <article className="panel prose">
+        <h2>How ToBS works</h2>
+        <p>
+          A person searches a name they already know — a brand, a product, a clause header. The index does not search the body of the contract, so “arbitration” will not dump every agreement that mentions a courtroom. It dumps the companies and products whose names or headers match.
+        </p>
+        <p>
+          Open a product and you get that instrument, not the whole corporate group. YouTube is not Gmail. The API is not the chatbot. Each instrument is at least five things, because one spicy clause is not the deal.
+        </p>
+        <ol>
+          <li><strong>Ingest.</strong> Someone opens the live terms on a date. ToBS stores the URL, the section pointer, and that timestamp. It does not keep a private copy of the full document.</li>
+          <li><strong>Separate the bites.</strong> Parties, license, data, money, shutdown, changes, and the forum. If a bite is not in the document, the row says so.</li>
+          <li><strong>Quote or don’t.</strong> A verbatim outtake is a short sentence copied that day. An orientation is a reading. A gap means we looked and the instrument was not public.</li>
+          <li><strong>Score.</strong> The rating is editorial. Ten is the most extractive toward the person who did not draft it. The product number is the average of the scored rows.</li>
+          <li><strong>Age the index.</strong> The day counter is only “days since this row was taken.” When the company rewrites the terms, the row is stale on purpose until someone re-ingests it.</li>
+        </ol>
+      </article>
+      <article className="panel prose">
+        <h2>How a public edit lands</h2>
+        <p>Anyone can propose a better row. A maintainer merges it. That review is the quality control. The live site does not take silent edits.</p>
+        <ol>
+          <li>Fork the repo and edit <code>src/data</code>.</li>
+          <li>Keep subsidiaries as their own instruments. Do not fold Quest into “Meta” and call it done.</li>
+          <li>Every new thing needs a source URL, the date you opened it, and a section a reader can find.</li>
+          <li>No excerpt unless you copied it. Invented quotes get rejected.</li>
+          <li>A predatory score needs a reason in the row. Open a pull request.</li>
+        </ol>
+        <p>Local law still sits on top of a foreign forum clause. The row is supposed to say both.</p>
+      </article>
+    </div>
   );
 }
 
@@ -385,6 +426,12 @@ function Log() {
   return (
     <article className="panel prose">
       <h2>Changelog</h2>
+      <p><strong>0.2.0</strong> — 29 September 2026</p>
+      <ul>
+        <li>The index uses the width of the screen. Each instrument is a full-width ledger: thing, plain English, document, court, rating.</li>
+        <li>Every terms document now carries at least five distinct things.</li>
+        <li>How it works is spelled out on the home page and on Edit the index: ingest, separate, quote or don’t, score, age.</li>
+      </ul>
       <p><strong>0.1.0</strong> — 28 September 2026</p>
       <ul>
         <li>First public index. Search after three characters, company and product results, clause breakdowns, days-since-ingestion.</li>
